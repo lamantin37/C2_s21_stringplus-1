@@ -479,20 +479,17 @@ int __check_exponential_form__(char *str, char **old, int *n_counter) {
 }
 
 void __rewrite_ptr__(void *offset, char **old, int *n_counter) {
-  char *str = NULL;
-  str = (char *)offset;
-  for (size_t i = 0; i < sizeof(offset) * 10; i++) {
-    *((char *)str) = '\0';
-    str++;
-  }
-
   char *p = NULL;
   p = *old;
-  for (; *p != '\0'; p++) {
-    if (isspace(*p) || *p == '\0') {
-      (*old)++;
-      *(char *)offset = '\0';
-      break;
+  for (;; p++) {
+    if (*p != '\n') {
+      if (isspace(*p) || *p == '\0') {
+        (*old)++;
+        *(char *)offset = '\0';
+        break;
+      }
+    } else {
+      p++;
     }
     *(char *)offset = *p;
     (char *)offset++;
