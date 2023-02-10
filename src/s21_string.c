@@ -240,15 +240,9 @@ int s21_memcmp(const void *str1, const void *str2, size_t n) {
 void *s21_memcpy(void *dest, const void *src, size_t n) {
   char *buffer_dest = dest;
   size_t counter = 0;
-  for (const char *p = src;; p++, counter++) {
-    if (counter == n) {
-      break;
-    }
+  for (const char *p = src; counter != n; p++, counter++) {
     *((char *)dest) = *p;
     dest++;
-    if (*p == '\0') {
-      break;
-    }
   }
   return buffer_dest;
 }
