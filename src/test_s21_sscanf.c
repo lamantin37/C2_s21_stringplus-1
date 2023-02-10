@@ -232,6 +232,69 @@ START_TEST(s21_sprintf_n_test) {
 }
 END_TEST
 
+START_TEST(s21_sprintf_extra_test) {
+  int a = 0, a1 = 0;
+  unsigned int b = 0, b1 = 0;
+  char c[128] = "\0", c1[128] = "\0";
+  char d, d1;
+
+  sscanf("123 423 abc d", "%d %u %s %c", &a, &b, c, &d);
+  s21_sscanf("123 423 abc d", "%d %u %s %c", &a1, &b1, c1, &d1);
+
+  ck_assert_int_eq(a, a1);
+  ck_assert_uint_eq(b, b1);
+  ck_assert_str_eq(c, c1);
+  ck_assert_int_eq(d, d1);
+}
+END_TEST
+
+START_TEST(s21_sprintf_extra_str_1_test) {
+  char a[128] = "\0", a1[128] = "\0";
+
+  sscanf("\nqQ", "%s", a);
+  s21_sscanf("\nqQ", "%s", a1);
+
+  ck_assert_str_eq(a, a1);
+}
+
+START_TEST(s21_sprintf_extra_str_2_test) {
+  char a[128] = "\0", a1[128] = "\0";
+
+  sscanf("", "%s", a);
+  s21_sscanf("", "%s", a1);
+
+  ck_assert_str_eq(a, a1);
+}
+
+START_TEST(s21_sprintf_extra_str_3_test) {
+  char a[128] = "\0", a1[128] = "\0";
+
+  sscanf("\n", "%s", a);
+  s21_sscanf("\n", "%s", a1);
+
+  ck_assert_str_eq(a, a1);
+}
+
+// оригинальная функция ломается на валгринде //
+// тест лучше не запускать                    //
+// failed: a == "", a1 == ""                  //
+
+// START_TEST(s21_sprintf_extra_str_4_test) {
+//   char a[128], a1[128];
+//   sscanf("\n", "%s", a);
+//   s21_sscanf("\n", "%s", a1);
+//   ck_assert_str_eq(a, a1);
+// }
+
+START_TEST(s21_sprintf_extra_str_4_test) {
+  char a[128] = "\0";
+  char a1[128];
+  sscanf("\n", "%s", a);
+  s21_sscanf("\n", "%s", a1);
+
+  ck_assert_str_eq(a, a1);
+}
+
 Suite *Create_suite_s21_sscanf() {
   Suite *suite = suite_create("s21_sscanf tests");
   TCase *tcase_core = tcase_create("Core");
@@ -248,6 +311,11 @@ Suite *Create_suite_s21_sscanf() {
   tcase_add_test(tcase_core, s21_sprintf_p_test);
   tcase_add_test(tcase_core, s21_sprintf_prc_test);
   tcase_add_test(tcase_core, s21_sprintf_n_test);
+  tcase_add_test(tcase_core, s21_sprintf_extra_test);
+  tcase_add_test(tcase_core, s21_sprintf_extra_str_1_test);
+  tcase_add_test(tcase_core, s21_sprintf_extra_str_2_test);
+  tcase_add_test(tcase_core, s21_sprintf_extra_str_3_test);
+  tcase_add_test(tcase_core, s21_sprintf_extra_str_4_test);
   suite_add_tcase(suite, tcase_core);
   return suite;
 }
