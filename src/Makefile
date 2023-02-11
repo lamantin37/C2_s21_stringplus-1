@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -std=c11 -std=c11 -g
+CFLAGS = -Wall -Wextra -Werror -std=c11 
 SOURCE = $(wildcard s21_*.c)
 HEADERS = $(wildcard s21_*.h)
 TESTS = $(wildcard test_*)
@@ -42,6 +42,14 @@ test: $(TESTS) ${PROJECT_NAME}.a
 	$(info Build tests                             )
 	$(info ----------------------------------------)
 	$(CC) $^ $(ADD_LIB) -o $@  
+	./$@
+
+debug: $(TESTS) ${PROJECT_NAME}.a
+	$(info                                         )
+	$(info ----------------------------------------)
+	$(info Build tests with debug for valgrind     )
+	$(info ----------------------------------------)
+	$(CC) -g $^ $(ADD_LIB) -o $@
 	./$@
 
 gcov_report: clean lcov ${SOURCE} ${TESTS} 
