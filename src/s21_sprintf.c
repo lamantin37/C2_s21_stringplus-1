@@ -59,7 +59,7 @@ char *IntToString(uint64_t value, bool sign, size_t num_digits, size_t base,
               num_digits);
   if (sign) *str++ = '-';
 
-  char buf[MAX_ULONG_LEN];
+  char buf[MAX_ULONG_LEN] = {0};
   size_t len = 0;
   do {
     int digit = value % base;
@@ -306,7 +306,7 @@ char *ProcessFlags(char *buf, ArgFormat *arg_fmt, bool negative_value) {
 }
 
 void PrintInt(char *buf, int64_t value, ArgFormat *arg_fmt, int base) {
-  char str[MAX_DECIMAL_LEN];
+  char str[MAX_DECIMAL_LEN] = {0};
   IntToString(labs(value), value < 0, GetNumDigits(arg_fmt), base, str);
   for (const char *p = str; *p; ++p) {
     *buf++ = *p;
@@ -315,7 +315,7 @@ void PrintInt(char *buf, int64_t value, ArgFormat *arg_fmt, int base) {
 }
 
 void PrintUnsignedInt(char *buf, int num_digits, int64_t value, int base) {
-  char str[MAX_UNSIGNED_LEN];
+  char str[MAX_UNSIGNED_LEN] = {0};
   IntToString(value, false, num_digits, base, str);
   for (const char *p = str; *p; ++p) {
     *buf++ = *p;
@@ -333,7 +333,7 @@ void Print_o(char *buf, ArgFormat *arg_fmt, va_list args) {
   int64_t value = GetUnsignedIntArgument(arg_fmt, args);
   buf = ProcessFlags(buf, arg_fmt, value < 0);
 
-  char tmp_buf[MAX_DECIMAL_LEN];
+  char tmp_buf[MAX_DECIMAL_LEN] = {0};
   PrintUnsignedInt(tmp_buf, GetNumDigits(arg_fmt), value, 8);
 
   if (value != 0 && arg_fmt->sharp_flag && *tmp_buf != '0') {
@@ -376,7 +376,7 @@ void Print_f(char *buf, ArgFormat *arg_fmt, long double value) {
     precision = arg_fmt->precision;
   }
   DEBUG_PRINT("Print_f: value=%Lf prec=%d\n", value, precision);
-  char str[MAX_DOUBLE_LEN];
+  char str[MAX_DOUBLE_LEN] = {0};
   DoubleToString(value, precision, arg_fmt->sharp_flag, str);
   for (const char *p = str; *p; ++p) {
     *buf++ = *p;
@@ -424,7 +424,7 @@ void PrintExp(char *buf, ArgFormat *arg_fmt, long double value, char exp_char,
   value *= pow(10, -exp);
   DEBUG_PRINT("PrintExp: prec = %d, exp = %d\n", arg_fmt->precision, exp);
 
-  char mantissa_str[MAX_DOUBLE_LEN];
+  char mantissa_str[MAX_DOUBLE_LEN] = {0};
   int precision = 6;
   if (arg_fmt->precision_used) {
     precision = arg_fmt->precision;
@@ -458,7 +458,7 @@ void PrintExp(char *buf, ArgFormat *arg_fmt, long double value, char exp_char,
   }
   *buf++ = exp_char;
   if (exp >= 0) *buf++ = '+';
-  char exp_str[MAX_DOUBLE_LEN];
+  char exp_str[MAX_DOUBLE_LEN] = {0};
   IntToString(labs(exp), exp < 0, 2, 10, exp_str);
   for (p = exp_str; *p; ++p) {
     *buf++ = *p;
@@ -555,7 +555,7 @@ void PrintGeneral(char *buf, ArgFormat *arg_fmt, long double value,
     af.precision = precision - 1;
     DEBUG_PRINT("PrintGeneral: prec=%d\n", af.precision);
 
-    char str[MAX_DOUBLE_LEN];
+    char str[MAX_DOUBLE_LEN] = {0};
     bool print_trailing_zeroes = arg_fmt->sharp_flag;
     PrintExp(str, &af, value, exp_char, print_trailing_zeroes);
     s21_strcpy(buf, str);
@@ -731,7 +731,7 @@ char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args,
 
   char *buf_base = buf;
 
-  char raw_out[MAX_RAW_OUTPUT_LEN];
+  char raw_out[MAX_RAW_OUTPUT_LEN] = {0};
   bool is_nan_or_inf = false;
   char spec = arg_fmt->spec;
 
