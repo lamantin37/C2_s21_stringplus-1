@@ -8,6 +8,16 @@
 
 #define BUF_SIZE 5000
 
+#define TEST_PRINT_S(string)              \
+  {                                       \
+    char orig[BUF_SIZE];                  \
+    char result[BUF_SIZE];                \
+    int n1 = sprintf(orig, string);       \
+    int n2 = s21_sprintf(result, string); \
+    ck_assert_str_eq(orig, result);       \
+    ck_assert_int_eq(n1, n2);             \
+  }
+
 #define TEST_PRINT(format, ...)                        \
   {                                                    \
     char orig[BUF_SIZE];                               \
@@ -593,12 +603,14 @@ END_TEST
 START_TEST(s21_sprintf_extra_test) {
   TEST_PRINT("Hello %5d!", 12345);
   TEST_PRINT("Hello %10d!", 12345);
+  TEST_PRINT("Hello %10.d!", 12345);
   TEST_PRINT("Hello %010d!", 12345);
   TEST_PRINT("Hello %-10d!", 12345);
   TEST_PRINT("Hello %20f!", 123.45);
   TEST_PRINT("Hello %020.3f!\n", 123.456789123);
   TEST_PRINT("Hello %-20.5f!\n", 123.45);
   TEST_PRINT("How are %10s?\n", "you");
+  TEST_PRINT("How are %.s?\n", "you");
   TEST_PRINT("A%10.3f\n", 123.456789);
   TEST_PRINT("A%10.3f\n", 123.);
   TEST_PRINT("A%010.3f\n", 123.);
@@ -609,6 +621,7 @@ START_TEST(s21_sprintf_extra_test) {
   TEST_PRINT("%.0e", 0.0123456);
   TEST_PRINT("%.3g", 0.000123456);
   TEST_PRINT("%.0G", 0.00123456);
+  TEST_PRINT("%.G", 0.00123456);
   TEST_PRINT("%g", 0.000123456);
   TEST_PRINT("%G", 1.23456E-5);
   TEST_PRINT("%o", 1000);
@@ -666,10 +679,20 @@ START_TEST(s21_sprintf_extra_test) {
 }
 END_TEST
 
+START_TEST(s21_sprintf_string_test) {
+  TEST_PRINT_S("");
+  TEST_PRINT_S("\n");
+  TEST_PRINT_S("Hello");
+  TEST_PRINT_S("Hello world!");
+  TEST_PRINT_S("%%");
+}
+END_TEST
+
 Suite *Create_suite_s21_sprintf() {
   Suite *suite = suite_create("s21_sprintf tests");
   TCase *tcase_core = tcase_create("Core");
 
+  tcase_add_test(tcase_core, s21_sprintf_string_test);
   tcase_add_test(tcase_core, s21_sprintf_c_test);
   tcase_add_test(tcase_core, s21_sprintf_d_test);
   tcase_add_test(tcase_core, s21_sprintf_d_2test);

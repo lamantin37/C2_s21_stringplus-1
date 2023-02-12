@@ -347,8 +347,7 @@ void *s21_insert(const char *src, const char *str, size_t start_index) {
       second_part[i] = src[j];
     s21_strcat(first_part, second_part);
     free(second_part);
-  }
-   else {
+  } else {
     error_flag = 1;
   }
   return error_flag ? S21_NULL : (void *)first_part;

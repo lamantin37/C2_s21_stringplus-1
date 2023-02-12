@@ -13,6 +13,7 @@ START_TEST(s21_sprintf_c_test) {
   ck_assert_int_eq(c, c1);
 }
 END_TEST
+
 START_TEST(s21_sprintf_d_test) {
   int a = 0, b = 0, c = 0, f = 0;
   int a1 = 0, b1 = 0, c1 = 0, f1 = 0;
@@ -32,6 +33,7 @@ START_TEST(s21_sprintf_d_test) {
   ck_assert_int_eq(f, f1);
 }
 END_TEST
+
 START_TEST(s21_sprintf_i_test) {
   int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0;
   int a1 = 0, b1 = 0, c1 = 0, d1 = 0, e1 = 0, f1 = 0, g1 = 0;
@@ -48,6 +50,7 @@ START_TEST(s21_sprintf_i_test) {
   ck_assert_int_eq(g, g1);
 }
 END_TEST
+
 START_TEST(s21_sprintf_e_test) {
   double e = 0, a = 0, b = 0, c = 0, d = 0;
   long double f = 0, g = 0;
@@ -75,6 +78,7 @@ START_TEST(s21_sprintf_e_test) {
   // check exp
 }
 END_TEST
+
 START_TEST(s21_sprintf_f_test) {
   double e = 0, a = 0, b = 0, c = 0, d = 0;
   long double f = 0, g = 0;
@@ -120,6 +124,7 @@ START_TEST(s21_sprintf_g_test) {
   ck_assert_ldouble_eq(g, g1);
 }
 END_TEST
+
 START_TEST(s21_sprintf_o_test) {
   int a = 0, b = 0, c = 0, e = 0, f = 0;
   int a1 = 0, b1 = 0, c1 = 0, e1 = 0, f1 = 0;
@@ -141,6 +146,7 @@ START_TEST(s21_sprintf_o_test) {
   ck_assert_int_eq(s1, s2);
 }
 END_TEST
+
 START_TEST(s21_sprintf_s_test) {
   char a[128] = "\0", b[128] = "\0", c[128] = "\0", d[128] = "\0";
   char a1[128] = "\0", b1[128] = "\0", c1[128] = "\0", d1[128] = "\0";
@@ -152,6 +158,7 @@ START_TEST(s21_sprintf_s_test) {
   ck_assert_str_eq(d, d1);
 }
 END_TEST
+
 START_TEST(s21_sprintf_u_test) {
   unsigned int a = 0, b = 0, c = 0, e = 0, f = 0, g = 0;
   unsigned int a1 = 0, b1 = 0, c1 = 0, e1 = 0, f1 = 0, g1 = 0;
@@ -169,6 +176,7 @@ START_TEST(s21_sprintf_u_test) {
   ck_assert_uint_eq(g, g1);
 }
 END_TEST
+
 START_TEST(s21_sprintf_x_test) {
   unsigned int a = 0, b = 0, c = 0, d = 0, f = 0, g = 0;
   unsigned long long e = 0, e1 = 0;
@@ -206,6 +214,7 @@ START_TEST(s21_sprintf_p_test) {
   ck_assert_ptr_eq(g, g1);
 }
 END_TEST
+
 START_TEST(s21_sprintf_prc_test) {
   char b[32] = "\0", d[32] = "\0";
   char b1[32] = "\0", d1[32] = "\0";
@@ -279,7 +288,7 @@ START_TEST(s21_sprintf_extra_str_3_test) {
 // тест лучше не запускать                    //
 // failed: a == "", a1 == ""                  //
 
-// START_TEST(s21_sprintf_extra_str_4_test) {
+// START_TEST(s21_sprintf_boo_str_4_test) {
 //   char a[128], a1[128];
 //   sscanf("\n", "%s", a);
 //   s21_sscanf("\n", "%s", a1);
