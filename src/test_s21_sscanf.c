@@ -3,7 +3,7 @@
 
 #include "s21_sscanf.h"
 
-START_TEST(s21_sprintf_c_test) {
+START_TEST(s21_sscanf_c_test) {
   char a, b, c;
   char a1, b1, c1;
   sscanf("\naB1&OFEkf32", "%c %*c %c %c  ", &a, &b, &c);
@@ -14,7 +14,7 @@ START_TEST(s21_sprintf_c_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_d_test) {
+START_TEST(s21_sscanf_d_test) {
   int a = 0, b = 0, c = 0, f = 0;
   int a1 = 0, b1 = 0, c1 = 0, f1 = 0;
   short e1 = 0;
@@ -34,7 +34,7 @@ START_TEST(s21_sprintf_d_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_i_test) {
+START_TEST(s21_sscanf_i_test) {
   int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0;
   int a1 = 0, b1 = 0, c1 = 0, d1 = 0, e1 = 0, f1 = 0, g1 = 0;
   sscanf("+42144 11112 -64 1324 -12 12", "%i %2i %*i %i %i %i %i %i", &a, &b,
@@ -51,7 +51,7 @@ START_TEST(s21_sprintf_i_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_e_test) {
+START_TEST(s21_sscanf_e_test) {
   double e = 0, a = 0, b = 0, c = 0, d = 0;
   long double f = 0, g = 0;
   double e1 = 0, a1 = 0, b1 = 0, c1 = 0, d1 = 0;
@@ -79,7 +79,7 @@ START_TEST(s21_sprintf_e_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_f_test) {
+START_TEST(s21_sscanf_f_test) {
   double e = 0, a = 0, b = 0, c = 0, d = 0;
   long double f = 0, g = 0;
   double e1 = 0, a1 = 0, b1 = 0, c1 = 0, d1 = 0;
@@ -105,7 +105,7 @@ START_TEST(s21_sprintf_f_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_g_test) {
+START_TEST(s21_sscanf_g_test) {
   double e = 0, a = 0, b = 0, c = 0, d = 0;
   long double f = 0, g = 0;
   double e1 = 0, a1 = 0, b1 = 0, c1 = 0, d1 = 0;
@@ -125,7 +125,7 @@ START_TEST(s21_sprintf_g_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_o_test) {
+START_TEST(s21_sscanf_o_test) {
   int a = 0, b = 0, c = 0, e = 0, f = 0;
   int a1 = 0, b1 = 0, c1 = 0, e1 = 0, f1 = 0;
   long d = 0, d1 = 0;
@@ -147,7 +147,7 @@ START_TEST(s21_sprintf_o_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_s_test) {
+START_TEST(s21_sscanf_s_test) {
   char a[128] = "\0", b[128] = "\0", c[128] = "\0", d[128] = "\0";
   char a1[128] = "\0", b1[128] = "\0", c1[128] = "\0", d1[128] = "\0";
   sscanf("Q\nqQ q\tqq aaa", "%*s %s %s %s%s", a, b, c, d);
@@ -159,7 +159,7 @@ START_TEST(s21_sprintf_s_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_u_test) {
+START_TEST(s21_sscanf_u_test) {
   unsigned int a = 0, b = 0, c = 0, e = 0, f = 0, g = 0;
   unsigned int a1 = 0, b1 = 0, c1 = 0, e1 = 0, f1 = 0, g1 = 0;
   unsigned long d = 0, d1 = 0;
@@ -177,7 +177,7 @@ START_TEST(s21_sprintf_u_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_x_test) {
+START_TEST(s21_sscanf_x_test) {
   unsigned int a = 0, b = 0, c = 0, d = 0, f = 0, g = 0;
   unsigned long long e = 0, e1 = 0;
   unsigned int a1 = 0, b1 = 0, c1 = 0, d1 = 0, f1 = 0, g1 = 0;
@@ -195,7 +195,7 @@ START_TEST(s21_sprintf_x_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_p_test) {
+START_TEST(s21_sscanf_p_test) {
   void *a = NULL, *b = NULL, *c = NULL, *d = NULL, *f = NULL, *g = NULL;
   void *a1 = NULL, *b1 = NULL, *c1 = NULL, *d1 = NULL, *f1 = NULL, *g1 = NULL;
   sscanf(
@@ -215,7 +215,7 @@ START_TEST(s21_sprintf_p_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_prc_test) {
+START_TEST(s21_sscanf_prc_test) {
   char b[32] = "\0", d[32] = "\0";
   char b1[32] = "\0", d1[32] = "\0";
   sscanf("twe\nrqw\fq%%w.&12", "%*s %s%s%%", b, d);
@@ -225,7 +225,7 @@ START_TEST(s21_sprintf_prc_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_n_test) {
+START_TEST(s21_sscanf_n_test) {
   void *a = NULL, *b = NULL, *c = NULL, *d = NULL, *f = NULL, *g = NULL;
   void *a1 = NULL, *b1 = NULL, *c1 = NULL, *d1 = NULL, *f1 = NULL, *g1 = NULL;
   int n_counter = 0, n_counter1 = 0;
@@ -241,7 +241,7 @@ START_TEST(s21_sprintf_n_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_extra_test) {
+START_TEST(s21_sscanf_extra_test) {
   int a = 0, a1 = 0;
   unsigned int b = 0, b1 = 0;
   char c[128] = "\0", c1[128] = "\0";
@@ -257,7 +257,7 @@ START_TEST(s21_sprintf_extra_test) {
 }
 END_TEST
 
-START_TEST(s21_sprintf_extra_str_1_test) {
+START_TEST(s21_sscanf_extra_str_1_test) {
   char a[128] = "\0", a1[128] = "\0";
 
   sscanf("\nqQ", "%s", a);
@@ -266,7 +266,7 @@ START_TEST(s21_sprintf_extra_str_1_test) {
   ck_assert_str_eq(a, a1);
 }
 
-START_TEST(s21_sprintf_extra_str_2_test) {
+START_TEST(s21_sscanf_extra_str_2_test) {
   char a[128] = "\0", a1[128] = "\0";
 
   sscanf("", "%s", a);
@@ -275,7 +275,7 @@ START_TEST(s21_sprintf_extra_str_2_test) {
   ck_assert_str_eq(a, a1);
 }
 
-START_TEST(s21_sprintf_extra_str_3_test) {
+START_TEST(s21_sscanf_extra_str_3_test) {
   char a[128] = "\0", a1[128] = "\0";
 
   sscanf("\n", "%s", a);
@@ -288,14 +288,14 @@ START_TEST(s21_sprintf_extra_str_3_test) {
 // тест лучше не запускать                    //
 // failed: a == "", a1 == ""                  //
 
-// START_TEST(s21_sprintf_boo_str_4_test) {
+// START_TEST(s21_sscanf_boo_str_4_test) {
 //   char a[128], a1[128];
 //   sscanf("\n", "%s", a);
 //   s21_sscanf("\n", "%s", a1);
 //   ck_assert_str_eq(a, a1);
 // }
 
-START_TEST(s21_sprintf_extra_str_4_test) {
+START_TEST(s21_sscanf_extra_str_4_test) {
   char a[128] = "\0";
   char a1[128];
   sscanf("\n", "%s", a);
@@ -307,24 +307,24 @@ START_TEST(s21_sprintf_extra_str_4_test) {
 Suite *Create_suite_s21_sscanf() {
   Suite *suite = suite_create("s21_sscanf tests");
   TCase *tcase_core = tcase_create("Core");
-  tcase_add_test(tcase_core, s21_sprintf_c_test);
-  tcase_add_test(tcase_core, s21_sprintf_d_test);
-  tcase_add_test(tcase_core, s21_sprintf_i_test);
-  tcase_add_test(tcase_core, s21_sprintf_e_test);
-  tcase_add_test(tcase_core, s21_sprintf_f_test);
-  tcase_add_test(tcase_core, s21_sprintf_g_test);
-  tcase_add_test(tcase_core, s21_sprintf_o_test);
-  tcase_add_test(tcase_core, s21_sprintf_s_test);
-  tcase_add_test(tcase_core, s21_sprintf_u_test);
-  tcase_add_test(tcase_core, s21_sprintf_x_test);
-  tcase_add_test(tcase_core, s21_sprintf_p_test);
-  tcase_add_test(tcase_core, s21_sprintf_prc_test);
-  tcase_add_test(tcase_core, s21_sprintf_n_test);
-  tcase_add_test(tcase_core, s21_sprintf_extra_test);
-  tcase_add_test(tcase_core, s21_sprintf_extra_str_1_test);
-  tcase_add_test(tcase_core, s21_sprintf_extra_str_2_test);
-  tcase_add_test(tcase_core, s21_sprintf_extra_str_3_test);
-  tcase_add_test(tcase_core, s21_sprintf_extra_str_4_test);
+  tcase_add_test(tcase_core, s21_sscanf_c_test);
+  tcase_add_test(tcase_core, s21_sscanf_d_test);
+  tcase_add_test(tcase_core, s21_sscanf_i_test);
+  tcase_add_test(tcase_core, s21_sscanf_e_test);
+  tcase_add_test(tcase_core, s21_sscanf_f_test);
+  tcase_add_test(tcase_core, s21_sscanf_g_test);
+  tcase_add_test(tcase_core, s21_sscanf_o_test);
+  tcase_add_test(tcase_core, s21_sscanf_s_test);
+  tcase_add_test(tcase_core, s21_sscanf_u_test);
+  tcase_add_test(tcase_core, s21_sscanf_x_test);
+  tcase_add_test(tcase_core, s21_sscanf_p_test);
+  tcase_add_test(tcase_core, s21_sscanf_prc_test);
+  tcase_add_test(tcase_core, s21_sscanf_n_test);
+  tcase_add_test(tcase_core, s21_sscanf_extra_test);
+  tcase_add_test(tcase_core, s21_sscanf_extra_str_1_test);
+  tcase_add_test(tcase_core, s21_sscanf_extra_str_2_test);
+  tcase_add_test(tcase_core, s21_sscanf_extra_str_3_test);
+  tcase_add_test(tcase_core, s21_sscanf_extra_str_4_test);
   suite_add_tcase(suite, tcase_core);
   return suite;
 }

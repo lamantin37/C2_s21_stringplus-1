@@ -4,6 +4,11 @@ int s21_sscanf(char *str1, const char *format, ...) {
   va_list factor;
   va_start(factor, format);
 
+  // reset internal state (static variables)
+  __convert_decimal__(NULL, NULL, NULL, 0);
+  __convert_hexadecimal__(NULL, NULL, 0, NULL, 0);
+  convert_decimal(NULL, NULL, 0, 0, 0);
+
   int n_counter = 0;
 
   for (char *p = (char *)format; *p != '\0'; p++) {
@@ -69,15 +74,25 @@ int __reverse_int__(int src) {
 
 int convert_decimal(void *offset, char *str1, int flag, int width, int lenght) {
   static int initializer = 0;
-  int n_counter_origin = 0;
   static int n_counter = 0;
   static char *old = NULL;
+  static char source = '\0';
+
+  if (offset == NULL && str1 == NULL && flag == 0 && width == 0 &&
+      lenght == 0) {
+    initializer = 0;
+    n_counter = 0;
+    old = NULL;
+    source = '\0';
+    return 0;
+  }
+
+  int n_counter_origin = 0;
   int case_o = 16;
   int lenght_flag = 0;
   char *temp_char = NULL;
   int counter = 0;
 
-  static char source = '\0';
   if (source != *str1) {
     source = *str1;
     old = NULL;
@@ -162,16 +177,21 @@ int convert_decimal(void *offset, char *str1, int flag, int width, int lenght) {
             *(long double *)offset =
                 __decimal_to_double_converter__(__number__) +
                 __pre_point_number__;
-          } else {
+          } else if (width == 'l') {
             *(double *)offset = __decimal_to_double_converter__(__number__) +
                                 __pre_point_number__;
+          } else {
+            *(float *)offset = __decimal_to_double_converter__(__number__) +
+                               __pre_point_number__;
           }
           int i = 0;
           long long num = 0;
           if (width == 'L') {
             num = (long long)*(long double *)offset;
-          } else {
+          } else if (width == 'l') {
             num = (long long)*(double *)offset;
+          } else {
+            num = (long long)*(float *)offset;
           }
           for (i = 0; num != 0; i++, num = num / 10) {
           }
@@ -181,11 +201,15 @@ int convert_decimal(void *offset, char *str1, int flag, int width, int lenght) {
                      10 -
                  1.0) +
                 ((long long)*(long double *)offset % (long long)pow(10, i - 1));
-          } else {
+          } else if (width == 'l') {
             *(double *)offset =
                 ((*(double *)offset - (long long)*(double *)offset) * 10 -
                  1.0) +
                 ((long long)*(double *)offset % (long long)pow(10, i - 1));
+          } else {
+            *(float *)offset =
+                ((*(float *)offset - (long long)*(float *)offset) * 10 - 1.0) +
+                ((long long)*(float *)offset % (long long)pow(10, i - 1));
           }
         }
 
@@ -278,6 +302,11 @@ int __take_len__(void *offset, int width) {
 
 int __convert_decimal__(void *offset, char **old, int *n_counter, int width) {
   static int flag = 0;
+  if (offset == NULL && old == NULL) {
+    flag = 0;
+    return 0;
+  }
+
   long long pow_number = 0;
   int len_decimal_counter = 0;
   char *p = NULL;
@@ -324,6 +353,12 @@ int __convert_decimal__(void *offset, char **old, int *n_counter, int width) {
 int __convert_hexadecimal__(void *offset, char **old, int case_o,
                             int *n_counter, int width) {
   static int flag = 0;
+
+  if (offset == NULL) {
+    flag = 0;
+    return 0;
+  }
+
   int power = 0;
   char *p = NULL;
   int minus = 0;
