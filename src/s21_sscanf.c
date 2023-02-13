@@ -169,10 +169,23 @@ int convert_decimal(void *offset, char *str1, int flag, int width, int lenght) {
         if (*old == '-') {
           minus = 1;
         }
-        if (__convert_decimal__(offset, &old, &n_counter, 'L')) {
-          long long __pre_point_number__ = *(long long *)offset;
-          __convert_decimal__(offset, &old, &n_counter, 'L');
-          long long __number__ = *(long long *)offset;
+
+        if (__convert_decimal__(offset, &old, &n_counter, ' ')) {
+          long long __pre_point_number__;
+          if (width == 'L' || width == 'l') {
+            __pre_point_number__ = *(long long *)offset;
+          } else {
+            __pre_point_number__ = *(int *)offset;
+          }
+
+          __convert_decimal__(offset, &old, &n_counter, ' ');
+          long long __number__;
+          if (width == 'L' || width == 'l') {
+            __number__ = *(long long *)offset;
+          } else {
+            __number__ = *(int *)offset;
+          }
+
           if (width == 'L') {
             *(long double *)offset =
                 __decimal_to_double_converter__(__number__) +
@@ -302,7 +315,7 @@ int __take_len__(void *offset, int width) {
 
 int __convert_decimal__(void *offset, char **old, int *n_counter, int width) {
   static int flag = 0;
-  if (offset == NULL && old == NULL) {
+  if (offset == NULL && old == NULL && n_counter == NULL && width == 0) {
     flag = 0;
     return 0;
   }
@@ -343,6 +356,7 @@ int __convert_decimal__(void *offset, char **old, int *n_counter, int width) {
   } else {
     *((int *)offset) = (int)decimal;
   }
+
   if (*(p - 1) == '.') {
     (*n_counter)++;
     flag = 1;
@@ -354,7 +368,7 @@ int __convert_hexadecimal__(void *offset, char **old, int case_o,
                             int *n_counter, int width) {
   static int flag = 0;
 
-  if (offset == NULL) {
+  if (offset == NULL && old == NULL) {
     flag = 0;
     return 0;
   }
