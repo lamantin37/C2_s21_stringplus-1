@@ -7,10 +7,10 @@ int s21_sscanf(char *str1, const char *format, ...) {
   // reset internal state (static variables)
   __convert_decimal__(NULL, NULL, NULL, 0);
   __convert_hexadecimal__(NULL, NULL, 0, NULL, 0);
-  convert_decimal(NULL, NULL, 0, 0, 0);
+  convert_decimal(NULL, NULL, 0, 0, 0, 0);
 
   int n_counter = 0;
-
+  int return_counter = 0;
   for (char *p = (char *)format; *p != '\0'; p++) {
     if (*p == '%') {
       struct info main_info = {'0', '0', 0};
@@ -20,20 +20,21 @@ int s21_sscanf(char *str1, const char *format, ...) {
         offset = va_arg(factor, void *);
       }
       if (*p == 'n') {
-        n_counter = convert_decimal(offset, str1, __aggregation__(main_info.ch),
-                                    main_info.width, main_info.lenght);
+        n_counter =
+            convert_decimal(offset, str1, __aggregation__(main_info.ch),
+                            main_info.width, main_info.lenght, &return_counter);
         if (offset != NULL) {
           *(int *)offset = n_counter;
         }
       } else {
         convert_decimal(offset, str1, __aggregation__(main_info.ch),
-                        main_info.width, main_info.lenght);
+                        main_info.width, main_info.lenght, &return_counter);
       }
     }
   }
   va_end(factor);
 
-  return 0;
+  return return_counter;
 }
 
 void check_specifiers(const char *format, struct info *main_info) {
@@ -72,7 +73,8 @@ int __reverse_int__(int src) {
   return dst;
 }
 
-int convert_decimal(void *offset, char *str1, int flag, int width, int lenght) {
+int convert_decimal(void *offset, char *str1, int flag, int width, int lenght,
+                    int *return_counter) {
   static int initializer = 0;
   static int n_counter = 0;
   static char *old = NULL;
@@ -118,6 +120,16 @@ int convert_decimal(void *offset, char *str1, int flag, int width, int lenght) {
 
   if (!initializer) {
     if (offset != NULL) {
+      (*return_counter)++;
+      if (flag != 3 && flag != 4) {
+        while (isalpha(*old) || isspace(*old) || *old == '+') {
+          if (*old == '-') {
+            break;
+          }
+          old++;
+        }
+      }
+
       if (*old == '%') {
         old++;
         if (*old == 'n') {
@@ -168,17 +180,20 @@ int convert_decimal(void *offset, char *str1, int flag, int width, int lenght) {
         int minus = 0;
         if (*old == '-') {
           minus = 1;
+          old++;
         }
 
-        if (__convert_decimal__(offset, &old, &n_counter, ' ')) {
-          long long __pre_point_number__;
-          if (width == 'L' || width == 'l') {
-            __pre_point_number__ = *(long long *)offset;
+        if (__convert_decimal__(offset, &old, &n_counter, width)) {
+          long long __pre_point_number__ = 0;
+          if (width == 'L') {
+            __pre_point_number__ = (long long)*(long long *)offset;
+          } else if (width == 'l') {
+            __pre_point_number__ = (long)*(long *)offset;
           } else {
-            __pre_point_number__ = *(int *)offset;
+            __pre_point_number__ = (int)*(int *)offset;
           }
 
-          __convert_decimal__(offset, &old, &n_counter, ' ');
+          __convert_decimal__(offset, &old, &n_counter, width);
           long long __number__;
           if (width == 'L' || width == 'l') {
             __number__ = *(long long *)offset;
@@ -231,10 +246,26 @@ int convert_decimal(void *offset, char *str1, int flag, int width, int lenght) {
         double koeff = 0;
         if ((koeff = __check_exponential_form__(--copy_ptr, &old,
                                                 &n_counter)) != 0) {
-          *(double *)offset *= pow(10, koeff);
+          if (width == 'L') {
+            *(long double *)offset *= (long double)pow(10, koeff);
+          } else if (width == 'l') {
+            *(double *)offset *= (double)pow(10, koeff);
+          } else {
+            *(float *)offset *= (float)pow(10, koeff);
+          }
         }
-        *((double *)offset) =
-            minus == 1 ? *((double *)offset) * (-1.0) : *((double *)offset);
+        if (width == 'L') {
+          *((long double *)offset) = minus == 1
+                                         ? *((long double *)offset) * (-1.0)
+                                         : *((long double *)offset);
+        } else if (width == 'l') {
+          *((double *)offset) =
+              minus == 1 ? *((double *)offset) * (-1.0) : *((double *)offset);
+        } else {
+          *((float *)offset) =
+              minus == 1 ? *((float *)offset) * (-1.0) : *((float *)offset);
+        }
+
       } else if (flag == 7) {
         if (*old == '0' && (*++old == 'x' || *old == 'X')) {
           old++;
@@ -347,6 +378,7 @@ int __convert_decimal__(void *offset, char **old, int *n_counter, int width) {
   if (flag) {
     flag = 0;
   }
+
   if (width == 'h') {
     *((short *)offset) = (short)decimal;
   } else if (width == 'l') {

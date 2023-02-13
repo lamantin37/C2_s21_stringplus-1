@@ -265,6 +265,7 @@ START_TEST(s21_sscanf_extra_str_1_test) {
 
   ck_assert_str_eq(a, a1);
 }
+END_TEST
 
 START_TEST(s21_sscanf_extra_str_2_test) {
   char a[128] = "\0", a1[128] = "\0";
@@ -274,6 +275,7 @@ START_TEST(s21_sscanf_extra_str_2_test) {
 
   ck_assert_str_eq(a, a1);
 }
+END_TEST
 
 START_TEST(s21_sscanf_extra_str_3_test) {
   char a[128] = "\0", a1[128] = "\0";
@@ -283,17 +285,7 @@ START_TEST(s21_sscanf_extra_str_3_test) {
 
   ck_assert_str_eq(a, a1);
 }
-
-// оригинальная функция ломается на валгринде //
-// тест лучше не запускать                    //
-// failed: a == "", a1 == ""                  //
-
-// START_TEST(s21_sscanf_boo_str_4_test) {
-//   char a[128], a1[128];
-//   sscanf("\n", "%s", a);
-//   s21_sscanf("\n", "%s", a1);
-//   ck_assert_str_eq(a, a1);
-// }
+END_TEST
 
 START_TEST(s21_sscanf_extra_str_4_test) {
   char a[128] = "\0";
@@ -303,6 +295,82 @@ START_TEST(s21_sscanf_extra_str_4_test) {
 
   ck_assert_str_eq(a, a1);
 }
+END_TEST
+
+#define TEST_SCAN_int(str, format) \
+  {                                \
+    int a = 0;                     \
+    int a1 = 0;                    \
+    s21_sscanf(str, format, &a);   \
+    sscanf(str, format, &a1);      \
+    ck_assert_int_eq(a, a1);       \
+  }
+
+START_TEST(s21_sscanf_extra_int_test) {
+  TEST_SCAN_int("1", "%d");
+  TEST_SCAN_int("123", "%d");
+  TEST_SCAN_int("-123", "%d");
+  TEST_SCAN_int(" 12345 ", "%d");
+}
+END_TEST
+
+#define TEST_SCAN_float(str, format)     \
+  {                                      \
+    float a = 0;                         \
+    float a1 = 0;                        \
+    s21_sscanf(str, format, &a);         \
+    sscanf(str, format, &a1);            \
+    ck_assert_float_eq_tol(a, a1, 1e-3); \
+  }
+
+START_TEST(s21_sscanf_extra_float_test) {
+  TEST_SCAN_float("+123.45", "%f");
+  TEST_SCAN_float("-123.45", "%f");
+  TEST_SCAN_float("123.45", "%f");
+  TEST_SCAN_float(" -123.45", "%f");
+}
+END_TEST
+
+#define TEST_SCAN_double(str, format)    \
+  {                                      \
+    double a = 0;                        \
+    double a1 = 0;                       \
+    s21_sscanf(str, format, &a);         \
+    sscanf(str, format, &a1);            \
+    ck_assert_float_eq_tol(a, a1, 1e-7); \
+  }
+
+START_TEST(s21_sscanf_extra_double_test) {
+  TEST_SCAN_double("+123.45", "%lf");
+  TEST_SCAN_double("-123.45", "%lf");
+  TEST_SCAN_double("123.45", "%lf");
+  TEST_SCAN_double(" -123.45", "%lf");
+}
+END_TEST
+
+#define TEST_SCAN_long_double(str, format) \
+  {                                        \
+    long double a = 0;                     \
+    long double a1 = 0;                    \
+    s21_sscanf(str, format, &a);           \
+    sscanf(str, format, &a1);              \
+    ck_assert_float_eq_tol(a, a1, 1e-7);   \
+  }
+
+START_TEST(s21_sscanf_extra_long_double_test) {
+  TEST_SCAN_long_double("+123.45", "%Lf");
+  TEST_SCAN_long_double("-123.45", "%Lf");
+  TEST_SCAN_long_double("123.45", "%Lf");
+  TEST_SCAN_long_double(" -123.45", "%Lf");
+}
+END_TEST
+
+START_TEST(s21_sscanf_extra_double_zero_test) {
+  TEST_SCAN_double("0", "%lf");
+  TEST_SCAN_double("-0", "%lf");
+  TEST_SCAN_double("+0", "%lf");
+}
+END_TEST
 
 Suite *Create_suite_s21_sscanf() {
   Suite *suite = suite_create("s21_sscanf tests");
@@ -325,6 +393,11 @@ Suite *Create_suite_s21_sscanf() {
   tcase_add_test(tcase_core, s21_sscanf_extra_str_2_test);
   tcase_add_test(tcase_core, s21_sscanf_extra_str_3_test);
   tcase_add_test(tcase_core, s21_sscanf_extra_str_4_test);
+  tcase_add_test(tcase_core, s21_sscanf_extra_int_test);
+  tcase_add_test(tcase_core, s21_sscanf_extra_float_test);
+  tcase_add_test(tcase_core, s21_sscanf_extra_double_test);
+  tcase_add_test(tcase_core, s21_sscanf_extra_long_double_test);
+  tcase_add_test(tcase_core, s21_sscanf_extra_double_zero_test);
   suite_add_tcase(suite, tcase_core);
   return suite;
 }
