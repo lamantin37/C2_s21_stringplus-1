@@ -189,6 +189,11 @@ const char *ParseArg(const char *format, ArgFormat *arg_fmt, va_list args) {
     ++p;
   }
 
+  // Flag ' ' is ignored when flag '+' is present
+  if (arg_fmt->plus_flag) {
+    arg_fmt->space_flag = false;
+  }
+
   if (*p == '*') {
     arg_fmt->width = va_arg(args, int);
     arg_fmt->width_used = true;
