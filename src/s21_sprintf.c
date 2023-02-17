@@ -392,6 +392,14 @@ int GetExp10(long double x) {
   frexpl(x, &exp2);
   int exp10 = LOG10_2 * exp2;
   if (exp2 < 1) --exp10;
+
+  // we are to check it and correct a bit if needs
+  long double nx = fabsl(x * pow(10, -exp10));
+  if (nx < 1)
+    --exp10;
+  else if (nx >= 10)
+    ++exp10;
+
   if (x == 0) exp10 = 0;
   return exp10;
 }

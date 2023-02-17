@@ -24,6 +24,10 @@
     char result[BUF_SIZE];                             \
     int n1 = sprintf(orig, format, __VA_ARGS__);       \
     int n2 = s21_sprintf(result, format, __VA_ARGS__); \
+    if (n1 != n2) {                                    \
+      printf("ERR: orig: %s\n", orig);                 \
+      fflush(stdout);                                  \
+    }                                                  \
     ck_assert_int_eq(n1, n2);                          \
     ck_assert_str_eq(orig, result);                    \
   }
@@ -162,6 +166,8 @@ long double float_values[] = {
     -(1 - 1e-30),
     -(1 + 1e-30),
     -12345.000001,
+    -1234567.,
+    -764231539.,
 
     +0.999,
     +1.000,
@@ -178,6 +184,8 @@ long double float_values[] = {
     +(1 - 1e-30),
     +(1 + 1e-30),
     +12345.000001,
+    +1234567.,
+    +764231539.,
 
     -1.234567890,
     +1.234567890,
@@ -694,6 +702,10 @@ START_TEST(s21_sprintf_other_test) {
   TEST_PRINT("%ctest", 0);
   TEST_PRINT("test%c", 0);
   TEST_PRINT("%ctest%c", 0, 0);
+
+  double num = -764231539.;
+  TEST_PRINT("%e", num);
+  TEST_PRINT("%e Test %5e Test %5.e", num, num, num);
 }
 END_TEST
 
