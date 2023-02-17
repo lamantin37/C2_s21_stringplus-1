@@ -651,19 +651,10 @@ char *ProcessWidth(char *buf, const char *str, const ArgFormat *arg_fmt,
       }
 
       int width = arg_fmt->width;
-      /*
-                // str: -1.234, after adding zeros should be: -00001.234
-                // need to move '-', '+', ' ' to the front of a number
-            if (filler == '0') {
-                      if(*str == '+' || *str == '-' || *str==' ') {
-                              *buf++ = *str;
-                              --width;
-                              ++str;
-                      }
-                }
-                */
+      // str: -1.234, after adding zeros should be: -00001.234
+      // need to move '-', '+', ' ' to the front of a number
       if (filler == '0') {
-        if (*str == ' ' || *str == '+' || *str == ' ') {
+        if (*str == '+' || *str == '-' || *str == ' ') {
           *buf++ = *str;
           --width;
           ++str;

@@ -706,6 +706,19 @@ START_TEST(s21_sprintf_other_test) {
   double num = -764231539.;
   TEST_PRINT("%e", num);
   TEST_PRINT("%e Test %5e Test %5.e", num, num, num);
+
+  // Process width with flags tests
+  TEST_PRINT("test:% 020.3E", 123.45678);
+  TEST_PRINT("test:%+20.3E", 123.45678);
+  TEST_PRINT("test:% +20.3E", 123.45678);
+  TEST_PRINT("test:%+020.3E", 123.45678);
+  TEST_PRINT("test:%0+20.3E", 123.45678);
+
+  TEST_PRINT("test:% 020.3E", -123.45678);
+  TEST_PRINT("test:%+20.3E", -123.45678);
+  TEST_PRINT("test:% +20.3E", -123.45678);
+  TEST_PRINT("test:%+020.3E", -123.45678);
+  TEST_PRINT("test:%0+20.3E", -123.45678);
 }
 END_TEST
 
