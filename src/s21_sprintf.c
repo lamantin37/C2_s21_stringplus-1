@@ -475,9 +475,12 @@ char *PrintWCString(char *buf, const wchar_t *str, int max_len) {
   if (max_len > 0) {
     convert_len = max_len;
   }
-  size_t len = wcstombs(buf, str, convert_len * kWcharSize);
-  if (len > 0u) buf[len] = '\0';
+  int len = wcstombs(buf, str, convert_len * kWcharSize);
+  DEBUG_PRINT("PrintWCString: len = %d\n", len);
 
+  if (len > 0) {
+    buf[len] = '\0';
+  }
   return buf + len;
 }
 
@@ -733,12 +736,9 @@ void ProcessNanOrInf(char *buf, long double value, bool upper_case) {
   }
 }
 
-char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args,
-                 int *bytes_counter) {
+char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args) {
   DEBUG_ARG_FORMAT(arg_fmt);
   DEBUG_PRINT("ProcessArg\n");
-
-  char *buf_base = buf;
 
   char raw_out[MAX_RAW_OUTPUT_LEN] = {0};
   bool is_nan_or_inf = false;
@@ -763,7 +763,6 @@ char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args,
         int arg = va_arg(args, int);
         Print_c(raw_out, arg_fmt, arg);
         if (arg == 0) {
-          //    (*bytes_counter)++;
           is_eol = true;
         }
         break;
@@ -777,35 +776,30 @@ char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args,
       case '%':
         PrintPercent(raw_out);
         break;
-      case 'n': {
-        int *p_number = va_arg(args, void *);
-        *p_number = *bytes_counter;
-        *raw_out = '\0';
-      }
     }
   }
 
   DEBUG_PRINT("ProcessArg: raw_out: '%s'\n", raw_out);
   buf = ProcessWidth(buf, raw_out, arg_fmt, is_nan_or_inf, is_eol);
-  *bytes_counter += buf - buf_base;
-  DEBUG_PRINT("ProcessArg: printed bytes: %d\n", buf - buf_base);
   return buf;
 }
 
 int Process(char *buf, const char *format, va_list args) {
   char *buf_base = buf;
 
-  int bytes_counter = 0;
-
-  ArgFormat arg_fmt = {0};
   const char *p = format;
   int counter = 0;
   while (*p) {
     if (*p == '%' && (p == format || *(p - 1) != '%')) {
+      ArgFormat arg_fmt = {0};
       p = ParseArg(p, &arg_fmt, args);
-
-      bytes_counter = buf - buf_base;
-      buf = ProcessArg(buf, &arg_fmt, args, &bytes_counter);
+      if (arg_fmt.spec == 'n') {
+        int *p_number = va_arg(args, void *);
+        int bytes_counter = buf - buf_base;
+        *p_number = bytes_counter;
+      } else {
+        buf = ProcessArg(buf, &arg_fmt, args);
+      }
       ++counter;
     } else {
       *buf++ = *p++;
@@ -818,7 +812,6 @@ int Process(char *buf, const char *format, va_list args) {
   }
 
   int res = buf - buf_base;
-  //  if (res < bytes_counter) res = bytes_counter;
 
   return res;
 }

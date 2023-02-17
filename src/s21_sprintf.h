@@ -104,8 +104,7 @@ bool IsDigitSpec(char spec);
 char *ProcessWidth(char *buf, const char *str, const ArgFormat *arg_fmt,
                    bool is_nan_or_inf, bool is_eol);
 
-char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args,
-                 int *bytes_counter);
+char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args);
 
 int Process(char *buf, const char *format, va_list args);
 
