@@ -651,11 +651,25 @@ char *ProcessWidth(char *buf, const char *str, const ArgFormat *arg_fmt,
       }
 
       int width = arg_fmt->width;
-      if (filler == '0' && *str == '-') {
-        *buf++ = '-';
-        --width;
-        ++str;
+      /*
+                // str: -1.234, after adding zeros should be: -00001.234
+                // need to move '-', '+', ' ' to the front of a number
+            if (filler == '0') {
+                      if(*str == '+' || *str == '-' || *str==' ') {
+                              *buf++ = *str;
+                              --width;
+                              ++str;
+                      }
+                }
+                */
+      if (filler == '0') {
+        if (*str == ' ' || *str == '+' || *str == ' ') {
+          *buf++ = *str;
+          --width;
+          ++str;
+        }
       }
+
       int str_len = s21_strlen(str);
       if (is_eol) {
         ++str_len;
@@ -820,7 +834,7 @@ int Process(char *buf, const char *format, va_list args) {
 
     DEBUG_PRINT("buf: %s\n", buf_base);
   }
-  if (*buf != '\0') {
+  if (*(buf - 1) != '\0') {
     *buf = '\0';
   }
 
