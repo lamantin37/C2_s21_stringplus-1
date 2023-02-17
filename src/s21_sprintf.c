@@ -829,10 +829,7 @@ int Process(char *buf, const char *format, va_list args) {
   if (buf == buf_base || (buf > buf_base && *(buf - 1) != '\0')) {
     *buf = '\0';
   }
-
-  int res = buf - buf_base;
-
-  return res;
+  return buf - buf_base;
 }
 
 int s21_sprintf(char *buf, const char *format, ...) {
