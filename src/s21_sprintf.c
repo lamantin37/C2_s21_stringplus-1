@@ -825,7 +825,8 @@ int Process(char *buf, const char *format, va_list args) {
 
     DEBUG_PRINT("buf: %s\n", buf_base);
   }
-  if (*(buf - 1) != '\0') {
+
+  if (buf == buf_base || (buf > buf_base && *(buf - 1) != '\0')) {
     *buf = '\0';
   }
 
