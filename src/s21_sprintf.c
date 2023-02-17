@@ -37,6 +37,8 @@ void DEBUG_ARG_FORMAT(ArgFormat *arg_fmt) {
   DEBUG_PRINT("zero_flag: %d\n", arg_fmt->zero_flag);
   if (arg_fmt->width_used) {
     DEBUG_PRINT("width: %d\n", arg_fmt->width);
+  } else {
+    DEBUG_PRINT("width not used\n");
   }
   if (arg_fmt->precision_used) {
     DEBUG_PRINT("precision: %d\n", arg_fmt->precision);
@@ -480,6 +482,7 @@ char *PrintWCString(char *buf, const wchar_t *str, int max_len) {
 }
 
 void Print_c(char *buf, ArgFormat *arg_fmt, int arg) {
+  DEBUG_PRINT("Print_c: arg = %d\n", arg);
   if (arg_fmt->len_used && arg_fmt->len == 'l') {
     wchar_t value = (wchar_t)arg;
     wchar_t wcs[2] = {value, 0};
@@ -606,7 +609,7 @@ char *ProcessWidth(char *buf, const char *str, const ArgFormat *arg_fmt,
   if (arg_fmt->width_used) {
     if (arg_fmt->minus_flag) {
       // align left
-      DEBUG_PRINT("align left");
+      DEBUG_PRINT("align left\n");
 
       int i = 0;
       while (str[i]) {
@@ -616,7 +619,7 @@ char *ProcessWidth(char *buf, const char *str, const ArgFormat *arg_fmt,
       int width = arg_fmt->width;
       if (is_eol) {
         *buf++ = '\0';
-        width -= 2;
+        --width;
       }
 
       while (i++ < width) {
@@ -624,7 +627,7 @@ char *ProcessWidth(char *buf, const char *str, const ArgFormat *arg_fmt,
       }
     } else {
       // align right
-      DEBUG_PRINT("align right");
+      DEBUG_PRINT("align right\n");
 
       char filler = ' ';
       if (arg_fmt->zero_flag && IsDigitSpec(arg_fmt->spec) && !is_nan_or_inf) {
@@ -632,14 +635,15 @@ char *ProcessWidth(char *buf, const char *str, const ArgFormat *arg_fmt,
       }
 
       int width = arg_fmt->width;
-      if (is_eol) --width;
-
       if (filler == '0' && *str == '-') {
         *buf++ = '-';
         --width;
         ++str;
       }
       int str_len = s21_strlen(str);
+      if (is_eol) {
+        ++str_len;
+      }
       int fill_len = width - str_len;
 
       DEBUG_PRINT("ProcessWidth: str='%s'\n", str);
@@ -653,8 +657,13 @@ char *ProcessWidth(char *buf, const char *str, const ArgFormat *arg_fmt,
       }
     }
   } else {
+    DEBUG_PRINT("Process width: just copy\n");
+    DEBUG_PRINT("is_eol: %d\n", is_eol);
     while (*str) {
       *buf++ = *str++;
+    };
+    if (is_eol) {
+      *buf++ = '\0';
     }
   }
   return buf;
@@ -754,7 +763,7 @@ char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args,
         int arg = va_arg(args, int);
         Print_c(raw_out, arg_fmt, arg);
         if (arg == 0) {
-          (*bytes_counter)++;
+          //    (*bytes_counter)++;
           is_eol = true;
         }
         break;
@@ -779,6 +788,7 @@ char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args,
   DEBUG_PRINT("ProcessArg: raw_out: '%s'\n", raw_out);
   buf = ProcessWidth(buf, raw_out, arg_fmt, is_nan_or_inf, is_eol);
   *bytes_counter += buf - buf_base;
+  DEBUG_PRINT("ProcessArg: printed bytes: %d\n", buf - buf_base);
   return buf;
 }
 
@@ -803,10 +813,13 @@ int Process(char *buf, const char *format, va_list args) {
 
     DEBUG_PRINT("buf: %s\n", buf_base);
   }
-  *buf = '\0';
+  if (*buf != '\0') {
+    *buf = '\0';
+  }
 
   int res = buf - buf_base;
-  if (res < bytes_counter) res = bytes_counter;
+  //  if (res < bytes_counter) res = bytes_counter;
+
   return res;
 }
 
