@@ -24,8 +24,8 @@
     char result[BUF_SIZE];                             \
     int n1 = sprintf(orig, format, __VA_ARGS__);       \
     int n2 = s21_sprintf(result, format, __VA_ARGS__); \
-    ck_assert_str_eq(orig, result);                    \
     ck_assert_int_eq(n1, n2);                          \
+    ck_assert_str_eq(orig, result);                    \
   }
 
 START_TEST(s21_sprintf_c_test) {
@@ -688,6 +688,15 @@ START_TEST(s21_sprintf_string_test) {
 }
 END_TEST
 
+START_TEST(s21_sprintf_other_test) {
+  //
+  TEST_PRINT("%c", 0);
+  TEST_PRINT("%ctest", 0);
+  TEST_PRINT("test%c", 0);
+  TEST_PRINT("%ctest%c", 0, 0);
+}
+END_TEST
+
 Suite *Create_suite_s21_sprintf() {
   Suite *suite = suite_create("s21_sprintf tests");
   TCase *tcase_core = tcase_create("Core");
@@ -718,6 +727,7 @@ Suite *Create_suite_s21_sprintf() {
   tcase_add_test(tcase_core, s21_sprintf_prc_test);
   tcase_add_test(tcase_core, s21_sprintf_limits_test);
   tcase_add_test(tcase_core, s21_sprintf_extra_test);
+  tcase_add_test(tcase_core, s21_sprintf_other_test);
   suite_add_tcase(suite, tcase_core);
 
   return suite;
