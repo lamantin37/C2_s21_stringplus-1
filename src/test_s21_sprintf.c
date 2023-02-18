@@ -25,10 +25,10 @@
     int n1 = sprintf(orig, format, __VA_ARGS__);          \
     int n2 = s21_sprintf(result, format, __VA_ARGS__);    \
     if (n1 != n2) {                                       \
+      printf("%d\n", __LINE__);                           \
       printf("%s\n", format);                             \
       printf("ERR:\norig: %s\nrest: %s\n", orig, result); \
       fflush(stdout);                                     \
-      exit(0);                                            \
     }                                                     \
     ck_assert_int_eq(n1, n2);                             \
     ck_assert_str_eq(orig, result);                       \
@@ -224,6 +224,7 @@ START_TEST(s21_sprintf_e_test) {
     TEST_PRINT("%.0Le %.0LE", d, d);
     TEST_PRINT("%-.0Le %+.0LE", d, d);
     TEST_PRINT("%-+.0Le %-+#.0LE", d, d);
+    TEST_PRINT("%.Le %.LE", d, d);
 
     TEST_PRINT("%.15Le", 123.456L);
 

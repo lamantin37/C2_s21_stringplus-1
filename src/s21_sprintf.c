@@ -121,7 +121,7 @@ void DoubleToString(long double value, int precision, bool need_dot,
 
   if (precision == 0) {
     uint64_t int_part = (uint64_t)roundl(value);
-    str = IntToString(int_part, false, 0, 10, str);
+    str = IntToString(int_part, false, 1, 10, str);
     str = AddZeroes(str, crop_to_long_int_shift);
     if (need_dot) {
       *str++ = LocaleDecimalPoint();
@@ -149,7 +149,7 @@ void DoubleToString(long double value, int precision, bool need_dot,
       float_part += 1;
     }
     shifted_float_part = float_part * power;
-    rounded = (int64_t)roundl(shifted_float_part);
+    rounded = (uint64_t)roundl(shifted_float_part);
 
     // if it's huge number then let's consider float part as zero
     if (crop_to_long_int_shift > 0) {
@@ -161,7 +161,7 @@ void DoubleToString(long double value, int precision, bool need_dot,
     DEBUG_PRINT("shifted_float_part: %.30Lf\n", shifted_float_part);
     DEBUG_PRINT("rounded: %ld\n", rounded);
 
-    str = IntToString(int_part, value < 0, 0, 10, str);
+    str = IntToString(int_part, false, 1, 10, str);
     str = AddZeroes(str, crop_to_long_int_shift);
 
     *str++ = LocaleDecimalPoint();
