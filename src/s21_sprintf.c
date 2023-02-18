@@ -607,6 +607,10 @@ void PrintGeneral(char *buf, ArgFormat *arg_fmt, long double value,
 }
 
 void PrintPointer(char *buf, ArgFormat *arg_fmt, void *p) {
+  if (p != NULL) {
+    buf = ProcessFlags(buf, arg_fmt, false);
+  }
+
   bool unix_host = false;
 #ifdef __unix__
   unix_host = true;
@@ -746,7 +750,7 @@ void PrintFloatArg(char *out, ArgFormat *arg_fmt, long double value) {
   }
 }
 
-void PrintNextChar(char *buf, ArgFormat *arg_fmt) {
+void PrintCharAfterPercent(char *buf, ArgFormat *arg_fmt) {
   *buf++ = '%';
   *buf++ = arg_fmt->next_char;
   *buf++ = '\0';
@@ -808,7 +812,8 @@ char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args) {
         PrintPercent(raw_out);
         break;
       case '?':
-        PrintNextChar(raw_out, arg_fmt);
+        // for uknown combo % and char (e.g. "%r")
+        PrintCharAfterPercent(raw_out, arg_fmt);
     }
   }
 
