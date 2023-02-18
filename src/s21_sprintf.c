@@ -257,7 +257,8 @@ const char *ParseArg(const char *format, ArgFormat *arg_fmt, va_list args) {
     arg_fmt->spec = *p;
   } else {
     arg_fmt->spec = '?';
-    arg_fmt->next_char = *p;
+    arg_fmt->format_begin = format;
+    arg_fmt->format_end = p;
   }
   ++p;
 
@@ -750,10 +751,12 @@ void PrintFloatArg(char *out, ArgFormat *arg_fmt, long double value) {
   }
 }
 
-void PrintCharAfterPercent(char *buf, ArgFormat *arg_fmt) {
-  *buf++ = '%';
-  *buf++ = arg_fmt->next_char;
-  *buf++ = '\0';
+char *PrintUknownSequence(char *buf, ArgFormat *arg_fmt) {
+  for (const char *p = arg_fmt->format_begin; p <= arg_fmt->format_end; ++p) {
+    *buf++ = *p;
+  }
+  *buf = '\0';
+  return buf;
 }
 
 void ProcessNanOrInf(char *buf, long double value, bool upper_case) {
@@ -781,44 +784,46 @@ char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args) {
 
   bool is_eol = false;
 
-  if (s21_strchr("diouxX", spec)) {
-    PrintIntArg(raw_out, arg_fmt, args);
-    DEBUG_PRINT("ProcessArg: PrintIntArg: raw_out: '%s'\n", raw_out);
-  } else if (s21_strchr("feEgG", spec)) {
-    long double value = GetDoubleArgument(arg_fmt, args);
-    if (isnan(value) || s21_isinf(value)) {
-      is_nan_or_inf = true;
-      ProcessNanOrInf(raw_out, value, isupper(spec));
-    } else {
-      PrintFloatArg(raw_out, arg_fmt, value);
-    }
+  if (spec == '?') {
+    // for uknown combo % and chars after (e.g. "%10.3hr")
+    buf = PrintUknownSequence(buf, arg_fmt);
   } else {
-    switch (spec) {
-      case 'c': {
-        int arg = va_arg(args, int);
-        Print_c(raw_out, arg_fmt, arg);
-        if (arg == 0) {
-          is_eol = true;
-        }
-        break;
+    if (s21_strchr("diouxX", spec)) {
+      PrintIntArg(raw_out, arg_fmt, args);
+      DEBUG_PRINT("ProcessArg: PrintIntArg: raw_out: '%s'\n", raw_out);
+    } else if (s21_strchr("feEgG", spec)) {
+      long double value = GetDoubleArgument(arg_fmt, args);
+      if (isnan(value) || s21_isinf(value)) {
+        is_nan_or_inf = true;
+        ProcessNanOrInf(raw_out, value, isupper(spec));
+      } else {
+        PrintFloatArg(raw_out, arg_fmt, value);
       }
-      case 's':
-        Print_s(raw_out, arg_fmt, args);
-        break;
-      case 'p':
-        PrintPointer(raw_out, arg_fmt, va_arg(args, void *));
-        break;
-      case '%':
-        PrintPercent(raw_out);
-        break;
-      case '?':
-        // for uknown combo % and char (e.g. "%r")
-        PrintCharAfterPercent(raw_out, arg_fmt);
+    } else {
+      switch (spec) {
+        case 'c': {
+          int arg = va_arg(args, int);
+          Print_c(raw_out, arg_fmt, arg);
+          if (arg == 0) {
+            is_eol = true;
+          }
+          break;
+        }
+        case 's':
+          Print_s(raw_out, arg_fmt, args);
+          break;
+        case 'p':
+          PrintPointer(raw_out, arg_fmt, va_arg(args, void *));
+          break;
+        case '%':
+          PrintPercent(raw_out);
+          break;
+      }
     }
-  }
 
-  DEBUG_PRINT("ProcessArg: raw_out: '%s'\n", raw_out);
-  buf = ProcessWidth(buf, raw_out, arg_fmt, is_nan_or_inf, is_eol);
+    DEBUG_PRINT("ProcessArg: raw_out: '%s'\n", raw_out);
+    buf = ProcessWidth(buf, raw_out, arg_fmt, is_nan_or_inf, is_eol);
+  }
   return buf;
 }
 

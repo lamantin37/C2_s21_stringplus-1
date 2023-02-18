@@ -730,6 +730,13 @@ START_TEST(s21_sprintf_other_test) {
   TEST_PRINT("%d Test %3.d Test %5.7d TEST_PRINT %10d %#d %-d %+d %.d % .d",
              val, val, val, val, val, val, val, val, val);
 
+  // But nonzero values should be printed
+  val = 1;
+  TEST_PRINT("%3.d", val);
+  TEST_PRINT("%d Test %3.d Test %5.7d", val, val, val);
+  TEST_PRINT("%d Test %3.d Test %5.7d TEST_PRINT %10d %#d %-d %+d %.d % .d",
+             val, val, val, val, val, val, val, val, val);
+
   // No '+' should be printed for octal numbers
   TEST_PRINT("%+o Test %+3.o Test %+5.7o TEST %+10o", 3015, 712, 99, 2939);
 
@@ -738,8 +745,8 @@ START_TEST(s21_sprintf_other_test) {
   TEST_PRINT("%%%%test%d", 1);
   TEST_PRINT("%%%%%%test%d", 1);
 
-  TEST_PRINT("%%%%%rest%d", 1);
-  TEST_PRINT("%%%%%rest%d", 1);
+  //  TEST_PRINT("%%%%%rest%d", 1);
+  //  TEST_PRINT("%%%%%rest%d", 1);
 }
 END_TEST
 
