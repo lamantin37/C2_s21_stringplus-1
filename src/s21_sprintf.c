@@ -815,7 +815,7 @@ int Process(char *buf, const char *format, va_list args) {
   const char *p = format;
   int counter = 0;
   while (*p) {
-    if (*p == '%' && (p == format || *(p - 1) != '%')) {
+    if (*p == '%') {
       ArgFormat arg_fmt = {0};
       p = ParseArg(p, &arg_fmt, args);
       if (arg_fmt.spec == 'n') {
