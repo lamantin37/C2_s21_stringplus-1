@@ -55,36 +55,41 @@ long double PrecisionRound(long double value, int precision) {
   return roundl(value * power) / power;
 }
 
-char *IntToString(uint64_t value, bool sign, size_t num_digits, size_t base,
+char *IntToString(uint64_t value, bool sign, int num_digits, size_t base,
                   char *str) {
   DEBUG_PRINT("IntToString: value = %lu, num_digits = %zu\n", value,
               num_digits);
-  if (sign) *str++ = '-';
+  if (value != 0 || num_digits != 0) {
+    if (sign) *str++ = '-';
 
-  char buf[MAX_ULONG_LEN] = {0};
-  size_t len = 0;
-  do {
-    int digit = value % base;
-    value /= base;
-    char c = '0';
-    if (digit < 10)
-      c += digit;
-    else
-      c = 'a' + digit - 10;
-    buf[len++] = c;
-  } while (value > 0);
+    char buf[MAX_ULONG_LEN] = {0};
+    int len = 0;
+    do {
+      int digit = value % base;
+      value /= base;
+      char c = '0';
+      if (digit < 10)
+        c += digit;
+      else
+        c = 'a' + digit - 10;
+      buf[len++] = c;
+    } while (value > 0);
+    DEBUG_PRINT("IntToString: buf1 = '%s'\n", buf);
 
-  // append zeroes before if num_digits required
-  while (len < num_digits) {
-    buf[len++] = '0';
-  }
-  buf[len] = '\0';
+    // append zeroes before if num_digits required
+    while (len < num_digits) {
+      buf[len++] = '0';
+    }
+    buf[len] = '\0';
 
-  DEBUG_PRINT("IntToString: buf = '%s'\n", buf);
+    DEBUG_PRINT("IntToString: buf = '%s'\n", buf);
 
-  while (len > 0) {
-    --len;
-    *str++ = buf[len];
+    while (len > 0) {
+      --len;
+      *str++ = buf[len];
+    }
+  } else {
+    if (num_digits > 0) *str++ = '0';
   }
   *str = '\0';
   return str;
@@ -100,20 +105,23 @@ char *AddZeroes(char *buf, int number) {
 
 void DoubleToString(long double value, int precision, bool need_dot,
                     char *str) {
-  DEBUG_PRINT("DoubleToString: here prec = %d, value = %Lf\n", precision,
-              value);
+  // sign
+  if (value < 0) {
+    *str++ = '-';
+    value = -value;
+  }
 
   // In case of huge number like 1E30 or even 1E300
   size_t crop_to_long_int_shift = 0;
-  while (value >= (double)LONG_MAX) {
+  while (value >= (long double)ULLONG_MAX) {
     value /= 10;
     ++crop_to_long_int_shift;
   }
   DEBUG_PRINT("crop_to_long_int_shift: %zu\n", crop_to_long_int_shift);
 
   if (precision == 0) {
-    int64_t int_part = (int64_t)roundl(value);
-    str = IntToString(labs(int_part), int_part < 0, 0, 10, str);
+    uint64_t int_part = (uint64_t)roundl(value);
+    str = IntToString(int_part, false, 0, 10, str);
     str = AddZeroes(str, crop_to_long_int_shift);
     if (need_dot) {
       *str++ = LocaleDecimalPoint();
@@ -122,11 +130,11 @@ void DoubleToString(long double value, int precision, bool need_dot,
   } else if (precision > 0) {
     precision > 16 && (precision = 16);  // Restriction for precision!!!
 
-    int64_t int_part = (int64_t)value;
+    uint64_t int_part = (uint64_t)value;
     long double float_part = value - int_part;
-    int64_t power = pow(10, precision);
+    uint64_t power = pow(10, precision);
     long double shifted_float_part = float_part * power;
-    int64_t rounded = (int64_t)roundl(shifted_float_part);
+    uint64_t rounded = (uint64_t)roundl(shifted_float_part);
 
     DEBUG_PRINT("int part: %ld", int_part);
     DEBUG_PRINT("float_part: %.30Lf\n", float_part);
@@ -153,11 +161,11 @@ void DoubleToString(long double value, int precision, bool need_dot,
     DEBUG_PRINT("shifted_float_part: %.30Lf\n", shifted_float_part);
     DEBUG_PRINT("rounded: %ld\n", rounded);
 
-    str = IntToString(labs(int_part), value < 0, 0, 10, str);
+    str = IntToString(int_part, value < 0, 0, 10, str);
     str = AddZeroes(str, crop_to_long_int_shift);
 
     *str++ = LocaleDecimalPoint();
-    IntToString(labs(rounded), false, precision, 10, str);
+    IntToString(rounded, false, precision, 10, str);
   } else {
     ERROR("DoubleToString: Negative precision");
   }
@@ -215,7 +223,7 @@ const char *ParseArg(const char *format, ArgFormat *arg_fmt, va_list args) {
     ++p;
     if (*p == '*') {
       int prec = va_arg(args, int);
-      if (prec < 0) prec = 0;
+      // if (prec < 0) prec = 0;
       arg_fmt->precision = prec;
       arg_fmt->precision_used = true;
       ++p;
@@ -456,8 +464,8 @@ void PrintExp(char *buf, ArgFormat *arg_fmt, long double value, char exp_char,
   DEBUG_PRINT("PrintExp: mantissa_str: %s\n", mantissa_str);
   char *p = strstr(mantissa_str, "10");
   DEBUG_PRINT("found 10 in mant: %p\n", p);
-  if (p &&
-      (*(p + 2) == '.' || (*(p + 2) == '\0' && !strchr(mantissa_str, '.')))) {
+  if (p && (*(p + 2) == LocaleDecimalPoint() ||
+            (*(p + 2) == '\0' && !strchr(mantissa_str, '.')))) {
     DEBUG_PRINT("Change mantissa from 10. to 1.) !");
     ++exp;
     value /= 10;

@@ -48,7 +48,7 @@ void DEBUG_ARG_FORMAT(ArgFormat *arg_fmt);
 
 void Error(const char *msg);
 
-char *IntToString(uint64_t value, bool sign, size_t num_digits, size_t base,
+char *IntToString(uint64_t value, bool sign, int num_digits, size_t base,
                   char *str);
 
 void DoubleToString(long double value, int precision, bool need_dot, char *str);

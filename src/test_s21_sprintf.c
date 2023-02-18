@@ -18,18 +18,20 @@
     ck_assert_int_eq(n1, n2);             \
   }
 
-#define TEST_PRINT(format, ...)                        \
-  {                                                    \
-    char orig[BUF_SIZE];                               \
-    char result[BUF_SIZE];                             \
-    int n1 = sprintf(orig, format, __VA_ARGS__);       \
-    int n2 = s21_sprintf(result, format, __VA_ARGS__); \
-    if (n1 != n2) {                                    \
-      printf("ERR: orig: %s\n", orig);                 \
-      fflush(stdout);                                  \
-    }                                                  \
-    ck_assert_int_eq(n1, n2);                          \
-    ck_assert_str_eq(orig, result);                    \
+#define TEST_PRINT(format, ...)                           \
+  {                                                       \
+    char orig[BUF_SIZE];                                  \
+    char result[BUF_SIZE];                                \
+    int n1 = sprintf(orig, format, __VA_ARGS__);          \
+    int n2 = s21_sprintf(result, format, __VA_ARGS__);    \
+    if (n1 != n2) {                                       \
+      printf("%s\n", format);                             \
+      printf("ERR:\norig: %s\nrest: %s\n", orig, result); \
+      fflush(stdout);                                     \
+      exit(0);                                            \
+    }                                                     \
+    ck_assert_int_eq(n1, n2);                             \
+    ck_assert_str_eq(orig, result);                       \
   }
 
 START_TEST(s21_sprintf_c_test) {
@@ -719,6 +721,13 @@ START_TEST(s21_sprintf_other_test) {
   TEST_PRINT("test:% +20.3E", -123.45678);
   TEST_PRINT("test:%+020.3E", -123.45678);
   TEST_PRINT("test:%0+20.3E", -123.45678);
+
+  // A precision of 0 means that no character is written for the value 0.
+  int val = 0;
+  TEST_PRINT("%3.d", val);
+  TEST_PRINT("%d Test %3.d Test %5.7d", val, val, val);
+  TEST_PRINT("%d Test %3.d Test %5.7d TEST_PRINT %10d %#d %-d %+d %.d % .d",
+             val, val, val, val, val, val, val, val, val);
 }
 END_TEST
 
