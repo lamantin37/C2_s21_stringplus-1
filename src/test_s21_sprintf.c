@@ -745,8 +745,10 @@ START_TEST(s21_sprintf_other_test) {
   TEST_PRINT("%%%%test%d", 1);
   TEST_PRINT("%%%%%%test%d", 1);
 
-  //  TEST_PRINT("%%%%%rest%d", 1);
-  //  TEST_PRINT("%%%%%rest%d", 1);
+  // Test uknown sequence after %
+  char buf[100];
+  sprintf(buf, "%10.2rrrboo!");
+  ck_assert_str_eq(buf, "%10.2rrrboo!");
 }
 END_TEST
 
