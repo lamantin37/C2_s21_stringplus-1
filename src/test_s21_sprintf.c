@@ -732,6 +732,14 @@ START_TEST(s21_sprintf_other_test) {
 
   // No '+' should be printed for octal numbers
   TEST_PRINT("%+o Test %+3.o Test %+5.7o TEST %+10o", 3015, 712, 99, 2939);
+
+  // Test percent
+  TEST_PRINT("%%test%d", 1);
+  TEST_PRINT("%%%%test%d", 1);
+  TEST_PRINT("%%%%%%test%d", 1);
+
+  TEST_PRINT("%%%%%rest%d", 1);
+  TEST_PRINT("%%%%%rest%d", 1);
 }
 END_TEST
 

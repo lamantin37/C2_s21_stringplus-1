@@ -242,13 +242,6 @@ const char *ParseArg(const char *format, ArgFormat *arg_fmt, va_list args) {
     arg_fmt->len = *p++;
     arg_fmt->len_used = true;
   }
-  if (s21_strchr("cdieEfgGosuxXpn%", *p)) {
-    arg_fmt->spec = *p;
-  } else {
-    putchar(*p);
-    puts(" -> ");
-    ERROR("Uknown conversion type character!");
-  }
 
   if (false == arg_fmt->precision_used) {
     if (s21_strchr("eEfgG", *p)) {
@@ -258,6 +251,13 @@ const char *ParseArg(const char *format, ArgFormat *arg_fmt, va_list args) {
       arg_fmt->precision = 1;
       arg_fmt->precision_used = true;
     }
+  }
+
+  if (s21_strchr("cdieEfgGosuxXpn%", *p)) {
+    arg_fmt->spec = *p;
+  } else {
+    arg_fmt->spec = '?';
+    arg_fmt->next_char = *p;
   }
   ++p;
 
@@ -746,6 +746,12 @@ void PrintFloatArg(char *out, ArgFormat *arg_fmt, long double value) {
   }
 }
 
+void PrintNextChar(char *buf, ArgFormat *arg_fmt) {
+  *buf++ = '%';
+  *buf++ = arg_fmt->next_char;
+  *buf++ = '\0';
+}
+
 void ProcessNanOrInf(char *buf, long double value, bool upper_case) {
   bool unix_host = false;
 #ifdef __unix__
@@ -801,6 +807,8 @@ char *ProcessArg(char *buf, ArgFormat *arg_fmt, va_list args) {
       case '%':
         PrintPercent(raw_out);
         break;
+      case '?':
+        PrintNextChar(raw_out, arg_fmt);
     }
   }
 

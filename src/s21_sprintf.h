@@ -42,6 +42,8 @@ typedef struct ArgFormat {
   bool len_used;
   char len;
   char spec;
+
+  char next_char;
 } ArgFormat;
 
 void DEBUG_ARG_FORMAT(ArgFormat *arg_fmt);
