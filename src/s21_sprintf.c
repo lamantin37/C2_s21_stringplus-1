@@ -346,7 +346,6 @@ void Print_d(char *buf, ArgFormat *arg_fmt, va_list args) {
 
 void Print_o(char *buf, ArgFormat *arg_fmt, va_list args) {
   int64_t value = GetUnsignedIntArgument(arg_fmt, args);
-  buf = ProcessFlags(buf, arg_fmt, value < 0);
 
   char tmp_buf[MAX_DECIMAL_LEN] = {0};
   PrintUnsignedInt(tmp_buf, GetNumDigits(arg_fmt), value, 8);
