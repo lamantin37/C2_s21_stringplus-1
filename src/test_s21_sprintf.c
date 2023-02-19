@@ -6,7 +6,7 @@
 
 #include "s21_sprintf.h"
 
-#define BUF_SIZE 5000
+#define BUF_SIZE 50000
 
 #define TEST_PRINT_S(string)              \
   {                                       \
@@ -757,6 +757,14 @@ START_TEST(s21_sprintf_other_test) {
 }
 END_TEST
 
+START_TEST(s21_sprintf_stable_test) {
+  char buf[50000];
+  s21_sprintf(buf, "%1000d", 1);
+  s21_sprintf(buf, "%.1000f", 1.23456);
+  s21_sprintf(buf, "%10000.10000Le", 1.2345678901234567890L);
+}
+END_TEST
+
 Suite *Create_suite_s21_sprintf() {
   Suite *suite = suite_create("s21_sprintf tests");
   TCase *tcase_core = tcase_create("Core");
@@ -788,6 +796,7 @@ Suite *Create_suite_s21_sprintf() {
   tcase_add_test(tcase_core, s21_sprintf_limits_test);
   tcase_add_test(tcase_core, s21_sprintf_extra_test);
   tcase_add_test(tcase_core, s21_sprintf_other_test);
+  tcase_add_test(tcase_core, s21_sprintf_stable_test);
   suite_add_tcase(suite, tcase_core);
 
   return suite;
