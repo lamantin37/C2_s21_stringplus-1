@@ -18,20 +18,14 @@
     ck_assert_int_eq(n1, n2);             \
   }
 
-#define TEST_PRINT(format, ...)                           \
-  {                                                       \
-    char orig[BUF_SIZE];                                  \
-    char result[BUF_SIZE];                                \
-    int n1 = sprintf(orig, format, __VA_ARGS__);          \
-    int n2 = s21_sprintf(result, format, __VA_ARGS__);    \
-    if (n1 != n2) {                                       \
-      printf("%d\n", __LINE__);                           \
-      printf("%s\n", format);                             \
-      printf("ERR:\norig: %s\nrest: %s\n", orig, result); \
-      fflush(stdout);                                     \
-    }                                                     \
-    ck_assert_int_eq(n1, n2);                             \
-    ck_assert_str_eq(orig, result);                       \
+#define TEST_PRINT(format, ...)                        \
+  {                                                    \
+    char orig[BUF_SIZE];                               \
+    char result[BUF_SIZE];                             \
+    int n1 = sprintf(orig, format, __VA_ARGS__);       \
+    int n2 = s21_sprintf(result, format, __VA_ARGS__); \
+    ck_assert_int_eq(n1, n2);                          \
+    ck_assert_str_eq(orig, result);                    \
   }
 
 START_TEST(s21_sprintf_c_test) {
@@ -347,7 +341,9 @@ START_TEST(s21_sprintf_s_test) {
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat"
+#pragma GCC diagnostic ignored "-Wformat-zero-length"
 #pragma GCC diagnostic ignored "-Wformat-overflow"
+
   TEST_PRINT("%s", NULL);
   TEST_PRINT("%10s", NULL);
   TEST_PRINT("%.7s", NULL);
@@ -690,6 +686,11 @@ START_TEST(s21_sprintf_extra_test) {
 }
 END_TEST
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#pragma GCC diagnostic ignored "-Wformat-zero-length"
+#pragma GCC diagnostic ignored "-Wformat-overflow"
+
 START_TEST(s21_sprintf_string_test) {
   TEST_PRINT_S("");
   TEST_PRINT_S("\n");
@@ -749,6 +750,7 @@ START_TEST(s21_sprintf_other_test) {
   char buf[100];
   sprintf(buf, "%10.2rrrboo!");
   ck_assert_str_eq(buf, "%10.2rrrboo!");
+#pragma GCC diagnostic pop
 }
 END_TEST
 
