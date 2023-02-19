@@ -663,6 +663,9 @@ START_TEST(s21_sprintf_extra_test) {
   float x = INFINITY;
   TEST_PRINT("x = %f", x);
 
+  double dx = INFINITY;
+  TEST_PRINT("dx = %f", dx);
+
   float y = nan("");
   TEST_PRINT("y = %f", y);
 
@@ -701,7 +704,7 @@ START_TEST(s21_sprintf_string_test) {
 END_TEST
 
 START_TEST(s21_sprintf_other_test) {
-  //
+  // 0 as a char inside a string
   TEST_PRINT("%c", 0);
   TEST_PRINT("%ctest", 0);
   TEST_PRINT("test%c", 0);
