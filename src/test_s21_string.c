@@ -354,6 +354,8 @@ START_TEST(s21_strstr_test) {
   TEST_RETURN(strstr, "0123456789", "89x");
   TEST_RETURN(strstr, "0123456789", "9");
   TEST_RETURN(strstr, "0123456789", "9x");
+
+  TEST_RETURN(strstr, "wwoworworkwork", "work");
 }
 END_TEST
 
