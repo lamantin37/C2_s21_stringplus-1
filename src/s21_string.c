@@ -275,7 +275,7 @@ void *s21_memset(void *str, int c, size_t n) {
 
 char *s21_strerror(int errnum) {
   char *p = NULL;
-  if (errnum < (int)ARR_SIZE(s21_str_errlist)) {
+  if (errnum >= 0 && errnum < (int)ARR_SIZE(s21_str_errlist)) {
     p = (char *)s21_str_errlist[errnum];
   } else {
     static char uknown_error[100] = {0};
