@@ -190,21 +190,21 @@ size_t s21_strspn(const char *str1, const char *str2) {
 }
 
 char *s21_strstr(const char *haystack, const char *needle) {
-    char *found = S21_NULL;
-    if (*needle == '\0') {
-        found = (char *)haystack;
-    } else {
-        const char *p = haystack;
-        size_t needle_len = s21_strlen(needle);
-        while (*p) {
-            if (s21_strncmp(p, needle, needle_len) == 0) {
-                found = (char *)p;
-                break;
-            }   
-            ++p;
-        }   
-    }   
-    return found;
+  char *found = S21_NULL;
+  if (*needle == '\0') {
+    found = (char *)haystack;
+  } else {
+    const char *p = haystack;
+    size_t needle_len = s21_strlen(needle);
+    while (*p) {
+      if (s21_strncmp(p, needle, needle_len) == 0) {
+        found = (char *)p;
+        break;
+      }
+      ++p;
+    }
+  }
+  return found;
 }
 
 void *s21_memchr(const void *str, int c, size_t n) {
