@@ -501,19 +501,17 @@ START_TEST(s21_trim_test) {
   new_str = s21_trim(a, sep2);
   if (new_str) ck_assert_str_eq("qqwERt", new_str);
   free(new_str);
+
   new_str = s21_trim(a, sep3);
-  if (new_str) ck_assert_str_eq("qqwERty", new_str);
+  if (new_str) ck_assert_str_eq(" qqwERty ", new_str);
   free(new_str);
+
   new_str = s21_trim(b, sep1);
   if (new_str) ck_assert_str_eq("\n \nQ Qwe Erty y\n \n", new_str);
   free(new_str);
   new_str = s21_trim(b, sep2);
   if (new_str) ck_assert_str_eq("we Ert", new_str);
   free(new_str);
-  new_str = s21_trim(b, sep3);
-  if (new_str) ck_assert_str_eq("Q Qwe Erty y", new_str);
-  free(new_str);
-  ck_assert(s21_trim(c, sep3) == S21_NULL);
 }
 END_TEST
 

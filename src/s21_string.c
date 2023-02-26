@@ -348,48 +348,29 @@ void *s21_insert(const char *src, const char *str, size_t start_index) {
 }
 
 void *s21_trim(const char *src, const char *trim_chars) {
-  int error_flag = 0;
-  char *new_str = S21_NULL;
-  char default_trim[4] = " \n\t";
-  if (src[0] != '\0') {
-    if (trim_chars == S21_NULL || s21_strlen(trim_chars) == 0) {
-      trim_chars = default_trim;
+  char *res = S21_NULL;
+  if (src) {
+    if (trim_chars) {
+      size_t prefix_len = s21_strspn(src, trim_chars);
+      src += prefix_len;
     }
-    new_str = (char *)calloc(s21_strlen(src) + 1, sizeof(char));
-    if (new_str == S21_NULL) {
-      error_flag = 1;
-    } else {
-      size_t pos_left = 0, pos_right = 0;
-      for (size_t i = 0; i <= s21_strlen(src); i++) {
-        size_t counter = 0;
-        for (size_t j = 0; j < s21_strlen(trim_chars); j++) {
-          if (src[i] == trim_chars[j]) {
-            pos_left++;
-            continue;
-          } else {
-            counter++;
-          }
-        }
-        if (counter >= s21_strlen(trim_chars)) break;
+
+    size_t len = s21_strlen(src);
+    int i = len - 1;
+    if (trim_chars) {
+      while (i >= 0 && s21_strchr(trim_chars, src[i])) {
+        --i;
       }
-      for (size_t i = s21_strlen(src) - 1; i >= (s21_strlen(src) / 2); i--) {
-        size_t counter = 0;
-        for (size_t j = 0; j < s21_strlen(trim_chars); j++) {
-          if (src[i] == trim_chars[j]) {
-            pos_right++;
-            continue;
-          } else {
-            counter++;
-          }
-        }
-        if (counter >= s21_strlen(trim_chars)) break;
-      }
-      for (size_t i = pos_left, j = 0; i < s21_strlen(src) - pos_right;
-           i++, j++)
-        new_str[j] = src[i];
     }
-  } else {
-    error_flag = 1;
+
+    int res_len = i + 1;
+    if (res_len >= 0) {
+      res = malloc((res_len + 1) * sizeof(char));
+      for (int j = 0; j < res_len; ++j) {
+        res[j] = src[j];
+      }
+      res[res_len] = '\0';
+    }
   }
-  return error_flag ? S21_NULL : (void *)new_str;
+  return res;
 }
