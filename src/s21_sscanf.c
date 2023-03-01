@@ -45,7 +45,6 @@ void check_specifiers(const char *format, struct info *main_info) {
   int lenght = 0;
   for (char *p = (char *)format; *p != '\0'; p++) {
     if (isdigit(*p)) {
-      lenght += exp * (*p - 48);
       exp *= 10;
     }
     for (char *st = width; *st != '\0'; st++) {
@@ -64,13 +63,16 @@ void check_specifiers(const char *format, struct info *main_info) {
       break;
     }
   }
-  main_info->lenght = __reverse_int__(lenght);
-}
+  exp /= 10;
 
-int __reverse_int__(int src) {
-  int dst = 0;
-  for (int t = src; t; t /= 10) dst = dst * 10 + t % 10;
-  return dst;
+  for (char *p = (char *)format; *p != '\0'; p++) {
+    if (isdigit(*p)) {
+      lenght += exp * (*p - 48);
+      exp /= 10;
+    }
+  }
+
+  main_info->lenght = lenght;
 }
 
 int convert_decimal(void *offset, char *str1, int flag, int width, int lenght,
@@ -149,17 +151,33 @@ int convert_decimal(void *offset, char *str1, int flag, int width, int lenght,
         }
         __convert_decimal__(offset, &old, &n_counter, width);
         if (width == 'h') {
-          *((short *)offset) %= (short)pow(10, __take_len__(offset, width) - 1);
-          *((short *)offset) =
-              minus == 1 ? *((short *)offset) * (-1) : *((short *)offset);
+          if (*((short *)offset) != 0) {
+            *((short *)offset) %=
+                (short)pow(10, __take_len__(offset, width) - 1);
+            *((short *)offset) =
+                minus == 1 ? *((short *)offset) * (-1) : *((short *)offset);
+          }
+          if (*((short *)offset) == 0 && *return_counter == 1) {
+            (*return_counter)--;
+          }
         } else if (width == 'l') {
-          *((long *)offset) %= (long)pow(10, __take_len__(offset, width) - 1);
-          *((long *)offset) =
-              minus == 1 ? *((long *)offset) * (-1) : *((long *)offset);
+          if (*((long *)offset) != 0) {
+            *((long *)offset) %= (long)pow(10, __take_len__(offset, width) - 1);
+            *((long *)offset) =
+                minus == 1 ? *((long *)offset) * (-1) : *((long *)offset);
+          }
+          if (*((long *)offset) == 0 && *return_counter == 1) {
+            (*return_counter)--;
+          }
         } else {
-          *((int *)offset) %= (int)pow(10, __take_len__(offset, width) - 1);
-          *((int *)offset) =
-              minus == 1 ? *((int *)offset) * (-1) : *((int *)offset);
+          if (*((int *)offset) != 0) {
+            *((int *)offset) %= (int)pow(10, __take_len__(offset, width) - 1);
+            *((int *)offset) =
+                minus == 1 ? *((int *)offset) * (-1) : *((int *)offset);
+          }
+          if (*((int *)offset) == 0 && *return_counter == 1) {
+            (*return_counter)--;
+          }
         }
       } else if (flag == 2) {
         if (*old == '0' && (*++old == 'x' || *old == 'X')) {
@@ -224,20 +242,41 @@ int convert_decimal(void *offset, char *str1, int flag, int width, int lenght,
           for (i = 0; num != 0; i++, num = num / 10) {
           }
           if (width == 'L') {
-            *(long double *)offset =
-                ((*(long double *)offset - (long long)*(long double *)offset) *
-                     10 -
-                 1.0) +
-                ((long long)*(long double *)offset % (long long)pow(10, i - 1));
+            if (*(long double *)offset != 0.0) {
+              *(long double *)offset = ((*(long double *)offset -
+                                         (long long)*(long double *)offset) *
+                                            10 -
+                                        1.0) +
+                                       ((long long)*(long double *)offset %
+                                        (long long)pow(10, i - 1));
+            }
+            if (*(long double *)offset == 0.0 && *return_counter == 1) {
+              (*return_counter)--;
+            }
           } else if (width == 'l') {
-            *(double *)offset =
-                ((*(double *)offset - (long long)*(double *)offset) * 10 -
-                 1.0) +
-                ((long long)*(double *)offset % (long long)pow(10, i - 1));
+            if (*(double *)offset != 0.0) {
+              *(double *)offset =
+                  ((*(double *)offset - (long long)*(double *)offset) * 10 -
+                   1.0) +
+                  ((long long)*(double *)offset % (long long)pow(10, i - 1));
+            }
+            if (*(double *)offset == 0.0 && *return_counter == 1) {
+              (*return_counter)--;
+            }
           } else {
-            *(float *)offset =
-                ((*(float *)offset - (long long)*(float *)offset) * 10 - 1.0) +
-                ((long long)*(float *)offset % (long long)pow(10, i - 1));
+            if (*(float *)offset != 0) {
+              *(float *)offset =
+                  ((*(float *)offset - (long long)*(float *)offset) * 10 -
+                   1.0) +
+                  ((long long)*(float *)offset % (long long)pow(10, i - 1));
+            }
+            if (*(float *)offset == 0.0 && *return_counter == 1) {
+              (*return_counter)--;
+            }
+          }
+        } else {
+          if (*return_counter == 1) {
+            (*return_counter)--;
           }
         }
 
@@ -362,8 +401,11 @@ int __convert_decimal__(void *offset, char **old, int *n_counter, int width) {
       len_decimal_counter--;
     }
   }
+
   pow_number = (long long)pow(10, len_decimal_counter - 1);
+
   long long decimal = pow_number * 10;
+
   for (p = *old;; p++) {
     if (*p == '-' || *p == '+') {
       p++;
@@ -598,10 +640,3 @@ int __aggregation__(char ch) {
   }
   return flag;
 }
-
-// int main() {
-//   char a[128] = "\0", b[128] = "\0", c[128] = "\0", d[128] = "\0";
-//   char a1[128] = "\0", b1[128] = "\0", c1[128] = "\0", d1[128] = "\0";
-//   sscanf("Q\nqQ q\tqq aaa", "%*s %s %s %s%s", a, b, c, d);
-//   s21_sscanf("Q\nqQ q\tqq aaa", "%*s %s %s %s%s", a1, b1, c1, d1);
-// }
