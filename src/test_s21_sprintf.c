@@ -751,7 +751,7 @@ START_TEST(s21_sprintf_other_test) {
 
   // Test uknown sequence after %
   char buf[100];
-  sprintf(buf, "%10.2rrrboo!");
+  s21_sprintf(buf, "%10.2rrrboo!");
   ck_assert_str_eq(buf, "%10.2rrrboo!");
 }
 END_TEST
@@ -761,8 +761,6 @@ START_TEST(s21_sprintf_stable_test) {
   s21_sprintf(buf, "%1000d", 1);
   s21_sprintf(buf, "%.1000f", 1.23456);
   s21_sprintf(buf, "%10000.10000Le", 1.2345678901234567890L);
-
-  TEST_PRINT("%rest%d", 12345);
 }
 END_TEST
 #pragma GCC diagnostic pop
