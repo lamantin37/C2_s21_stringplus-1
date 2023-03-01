@@ -14,7 +14,6 @@ struct info {
 
 int s21_sscanf(char *str1, const char *format, ...);
 void check_specifiers(const char *format, struct info *main_info);
-int __reverse_int__(int src);
 int convert_decimal(void *offset, char *str1, int flag, int width, int lenght,
                     int *return_counter);
 int __rewrite_ptr_use_lenght__(int lenght, const char *old, char *dst);
